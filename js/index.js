@@ -20,8 +20,6 @@ function smUp() {
 
 (function ($) {
     $(window).on("load", function () {
-
-
         //services menu
         var menu = $('.menu');
         var menuOpenBtn = $('.header__menu-btn');
@@ -67,56 +65,103 @@ function smUp() {
             $('.intro-info').find('.menu-nav__subitems').remove();
         }
 
-        //submenu
-        $('.menu-nav__item-wrapper--wc').click(function (e) {
-            if (mdUp()) {
-                e.preventDefault();
-                var subMenu = $(this).find('.menu-nav__subitems');
-                if ($(this).hasClass('menu-nav__item-wrapper--active')) {
-                    $(this).removeClass('menu-nav__item-wrapper--active');
-                    closeSubMenu();
+        if ($('body').hasClass('index-page')) {
+
+            //submenu for main page
+            $('.menu-nav__item-wrapper--wc').click(function (e) {
+                // e.preventDefault();
+                if (mdUp()) {
+                    // e.preventDefault();
+                    var subMenu = $(this).find('.menu-nav__subitems');
+                    if ($(this).hasClass('menu-nav__item-wrapper--active')) {
+                        $(this).removeClass('menu-nav__item-wrapper--active');
+                        closeSubMenu();
+                    } else {
+                        closeSubMenu();
+                        $('.menu-nav__item-wrapper--active').removeClass('menu-nav__item-wrapper--active');
+                        $(this).addClass('menu-nav__item-wrapper--active');
+                        subMenu.css('height', $('.menu').outerHeight());
+                        subMenu.clone().appendTo(".intro-info").show();
+                    }
+
+
+                    $('.intro-info .menu-nav__subitems').mCustomScrollbar();
+
                 } else {
-                    closeSubMenu();
-                    $('.menu-nav__item-wrapper--active').removeClass('menu-nav__item-wrapper--active');
-                    $(this).addClass('menu-nav__item-wrapper--active');
-                    subMenu.css('height', $('.menu').outerHeight());
-                    subMenu.clone().appendTo(".intro-info").show();
+                    var subMenu = $(this).find('.menu-nav__subitems');
+                    subMenu.addClass('menu-nav__subitems--active');
+                    // submenu.
+                    $('.menu-nav__subitems--active').mCustomScrollbar();
+                    if ($(this).find('.menu-nav__subitems-back').length == 0) {
+                        subMenu.prepend('<div class="menu-nav__subitems-back">назад к списку услуг</div>')
+                        $('.menu-nav__subitems-back').click(function (e) {
+                            e.stopPropagation();
+                            // console.log($(this).closest('.menu-nav__subitems--active'));
+                            $(this).closest('.menu-nav__subitems--active').removeClass('menu-nav__subitems--active');
+                        });
+                    }
+
                 }
+            });
+        }
 
-
-                $('.intro-info .menu-nav__subitems').mCustomScrollbar();
-
-            } else {
-                var subMenu = $(this).find('.menu-nav__subitems');
-                subMenu.addClass('menu-nav__subitems--active');
-                // submenu.
-                $('.menu-nav__subitems--active').mCustomScrollbar();
-                if ($(this).find('.menu-nav__subitems-back').length == 0) {
-                    subMenu.prepend('<div class="menu-nav__subitems-back">назад к списку услуг</div>')
-                    $('.menu-nav__subitems-back').click(function (e) {
-                        e.stopPropagation();
-                        console.log($(this).closest('.menu-nav__subitems--active'));
-                        $(this).closest('.menu-nav__subitems--active').removeClass('menu-nav__subitems--active');
-                    });
-                }
-
+        if ($('body').hasClass('info-page') || $('body').hasClass('service-page')) {
+            var submenuContainer = $('.ip-intro__submenu-wrapper');
+            function closeIpSubMenu() {
+                submenuContainer.hide();
+                submenuContainer.html('');
             }
-        });
+
+            // $('.menu-nav__subitem')
+            //     .click(function () {
+            //         console.log('Клик на пункт меню второго уровня');
+            //     });
+            $('.menu-nav__item-wrapper--wc').click(function (e) {
+                e.preventDefault();
+                if (mdUp()) {
+                    if ($(this).hasClass('menu-nav__item-wrapper--active')) {
+                        $(this).removeClass('menu-nav__item-wrapper--active');
+                        closeIpSubMenu();
+                    } else {
+                        closeIpSubMenu();
+                        $(('.menu-nav__item-wrapper--active')).removeClass(('menu-nav__item-wrapper--active'));
+                        $(this).addClass('menu-nav__item-wrapper--active');
+                        var submenu = $(this).find('.menu-nav__subitems');
+                        submenuContainer.show();
+                        submenu.clone().appendTo(submenuContainer).show()
+                            .css('height', $('.menu-nav__inner').outerHeight()).mCustomScrollbar();
+                    }
+                } else {
+                    //Для мобильных
+                    // console.log('Клик на пункт меню первого уровня');
+                    var subMenu = $(this).find('.menu-nav__subitems');
+                    subMenu.addClass('menu-nav__subitems--active');
+                    // submenu.
+                    $('.menu-nav__subitems--active').mCustomScrollbar();
+                    if ($(this).find('.menu-nav__subitems-back').length == 0) {
+                        subMenu.prepend('<div class="menu-nav__subitems-back">назад к списку услуг</div>')
+                        $('.menu-nav__subitems-back').click(function (e) {
+                            e.stopPropagation();
+                            // console.log($(this).closest('.menu-nav__subitems--active'));
+                            $(this).closest('.menu-nav__subitems--active').removeClass('menu-nav__subitems--active');
+                        });
+                    }
+                }
+
+            })
+
+
+        }
 
 
         $('.menu-nav__item-link').click(function () {
             closeSubMenu();
         });
-        $('.menu-nav__subitem').click(function (e) {
-            e.preventDefault();
-            // alert(1);
-            closeSubMenu();
-        });
-
-
-        // $('a[href="#"]').click(function (e) {
+        // $('.menu-nav__subitem').click(function (e) {
         //     e.preventDefault();
-        // })
+        //     alert(1);
+            // closeSubMenu();
+        // });
 
 
         function calcAboutImg() {
@@ -168,20 +213,32 @@ function smUp() {
         }
 
 
-        if ($('body').hasClass('info-page')) {
-            var headerHeight = $('.header').outerHeight();
+        if ($('body').hasClass('info-page') || $('body').hasClass('service-page')) {
+            var button = $('.menu__float-btn');
             $('.ip-intro').mousemove(function (e) {
-                var topCoord = event.pageY - headerHeight;
-                $('.menu__float-btn').css('bottom', topCoord + 'px');
+                if (e.target.closest('.ip-intro')) {
+                    var target = e.target.closest('.ip-intro'); // Здесь что-то уникальное, что может указать на род. блок
+
+                    var targetCoords = target.getBoundingClientRect();
+                    // var xCoord = e.clientX - targetCoords.left;
+                    var yCoord = e.clientY - targetCoords.top;
+
+                    // console.log('Координаты по X: ' + xCoord);
+                    // console.log('Координаты по Y: ' + yCoord);
+                    button.css('top', yCoord + 'px');
+                }
+
             });
+
+            //Открытие меню
             $('.menu__float-btn').click(function () {
-                if($('.menu.ip-intro__menu-wrapper').hasClass('ip-intro__menu-wrapper--opened')) {
+                if ($('.menu.ip-intro__menu-wrapper').hasClass('ip-intro__menu-wrapper--opened')) {
                     $('.menu.ip-intro__menu-wrapper').removeClass('ip-intro__menu-wrapper--opened')
                 } else {
                     $('.menu.ip-intro__menu-wrapper').addClass('ip-intro__menu-wrapper--opened')
                 }
             })
-
+            //Закрытие меню
             $('.ip-intro__menu-close-btn').click(function () {
                 $('.menu.ip-intro__menu-wrapper').removeClass('ip-intro__menu-wrapper--opened')
 
@@ -249,7 +306,6 @@ function smUp() {
         });
 
         if (!mdUp()) {
-            console.log('test');
             $('.project-item').each(function () {
                 $(this).detach().appendTo('.projects__mobile-slider-inner');
             });
@@ -264,10 +320,10 @@ function smUp() {
 
             prevBtn.click(function () {
                 projectsSlider.slick('slickPrev');
-            })
+            });
             nextBtn.click(function () {
                 projectsSlider.slick('slickNext');
-            })
+            });
         }
 
     });
